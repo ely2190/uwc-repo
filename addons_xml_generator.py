@@ -61,32 +61,32 @@ class Generator:
             if not os.path.isdir(BASE_DIR + os.sep + addon_dir):
                 continue
             addons = os.listdir(BASE_DIR + os.sep + addon_dir)
-            for addon in addons:
-                try:
-                    print('Adding {}'.format(addon))
-                    zip = zipfile.ZipFile(BASE_DIR + os.sep + addon_dir + os.sep + addon)
-                    addon_xml_file = [f for f in zip.namelist() if f.endswith('addon.xml')][-1]
-                    # split lines for stripping
-                    with zip.open(addon_xml_file) as addonfile:
-                        xml_lines = addonfile.read().decode('utf-8').splitlines()
-                    # new addon
-                    addon_xml = ""
-                    # loop thru cleaning each line
-                    for line in xml_lines:
-                        # skip encoding format line
-                        if line.find("<?xml") >= 0:
-                            continue
-                        # add line
-                        if sys.version < '3':
-                            addon_xml += unicode(line.rstrip() + "\n", "UTF-8")
-                        else:
-                            addon_xml += line.rstrip() + "\n"
-                    # we succeeded so add to our final addons.xml text
-                    addons_xml += addon_xml.rstrip() + "\n\n"
-                    print('Added {}'.format(addon))
-                except Exception as e:
-                    # missing or poorly formatted addon.xml
-                    print("Excluding %s for %s" % (addon, e))
+            addon = max(addons)
+            try:
+                print('Adding {}'.format(addon))
+                zip = zipfile.ZipFile(BASE_DIR + os.sep + addon_dir + os.sep + addon)
+                addon_xml_file = [f for f in zip.namelist() if f.endswith('addon.xml')][-1]
+                # split lines for stripping
+                with zip.open(addon_xml_file) as addonfile:
+                    xml_lines = addonfile.read().decode('utf-8').splitlines()
+                # new addon
+                addon_xml = ""
+                # loop thru cleaning each line
+                for line in xml_lines:
+                    # skip encoding format line
+                    if line.find("<?xml") >= 0:
+                        continue
+                    # add line
+                    if sys.version < '3':
+                        addon_xml += unicode(line.rstrip() + "\n", "UTF-8")
+                    else:
+                        addon_xml += line.rstrip() + "\n"
+                # we succeeded so add to our final addons.xml text
+                addons_xml += addon_xml.rstrip() + "\n\n"
+                print('Added {}'.format(addon))
+            except Exception as e:
+                # missing or poorly formatted addon.xml
+                print("Excluding %s for %s" % (addon, e))
         # clean and add closing tag
         addons_xml = addons_xml.strip() + u("\n</addons>\n")
         # save file
